@@ -114,3 +114,50 @@ Note: Additional validation could be added here, such as:
 - Checking that the transition function handles all possible state-symbol combinations
 
 I will come back to this if feel the need to do so
+
+### Finite State Machine implementation
+
+This library provides a generic Finite State Machine implementation that can be used to model and process state transitions based on input symbols. It's designed to be flexible, type-safe, and easy to integrate into your projects.
+
+## API Reference
+
+### `FiniteStateMachine<State, Symbol>`
+
+The main class that implements the finite state machine.
+
+#### Constructor
+
+```typescript
+constructor(config: FSMConfig<State, Symbol>)
+```
+
+Creates a new FSM with the provided configuration.
+
+#### Methods
+
+##### `process(input: Symbol[]): State`
+
+Processes a sequence of input symbols and returns the final state.
+
+##### `processWithOutput<OutputType>(input: Symbol[]): OutputType`
+
+Processes a sequence of input symbols for example 1 and 0, checks that the final state is an accepting state, and returns the mapped output.
+
+##### `accepts(input: Symbol[]): boolean`
+
+Checks whether the given input sequence leads to an accepting (final) state. We don't use this directly, i make this for test suits like jest easer to be tested.
+
+### `FSMConfig<State, Symbol>`
+
+The configuration interface for creating a finite state machine.
+
+```typescript
+interface FSMConfig<State, Symbol> {
+  states: Set<State>;
+  alphabet: Set<Symbol>;
+  initialState: State;
+  finalStates: Set<State>;
+  transition: (state: State, symbol: Symbol) => State;
+  outputMapper?: (state: State) => any;
+}
+```
