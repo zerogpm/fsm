@@ -1,4 +1,4 @@
-#My Thoughts steps
+## My Thoughts steps
 
 A finite automaton (FA) is a 5-tuple (Q, Σ, q₀, F, δ) where:
 
