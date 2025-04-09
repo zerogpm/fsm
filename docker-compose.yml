@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fsm
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fsm-test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm test
+    environment:
+      - NODE_ENV=test
