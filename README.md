@@ -180,6 +180,6 @@ interface FSMConfig<State, Symbol> {
   initialState: State;
   finalStates: Set<State>;
   transition: (state: State, symbol: Symbol) => State;
-  outputMapper?: (state: State) => any;
+  outputMapper?: (state: State) => (state: State) => OutputType;
 }
 ```
