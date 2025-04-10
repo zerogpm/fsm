@@ -12,11 +12,11 @@ export class FSMValidator {
   ): void {
     // Check that states set is provided
     if (config.states.size === 0) {
-      throw new Error("states cannot be empty");
+      throw new Error("States cannot be empty");
     }
 
     if (config.alphabet.size === 0) {
-      throw new Error("Alphaber cannot be empty");
+      throw new Error("Alphabet cannot be empty");
     }
 
     // Check that initial state is in the config
