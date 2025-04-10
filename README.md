@@ -49,7 +49,9 @@ export interface FSMConfig<State, Symbol, OutputType = any> {
 
 ## FSM Validator
 
-The following validation methods ensure that our FSM operates correctly by enforcing constraints on states, symbols, and configuration.
+The Validation is useful for checking many states, symbols and transition. Some state-symobol combinations might be overlooked
+during development.This catches the bug early on befor the fsm
+processes any input.
 
 ### validateConfig
 
@@ -59,9 +61,23 @@ Before we create a Generic Finite State Machine, we should validate that our con
 public static validateConfig<State, Symbol>(
     config: FSMConfig<State, Symbol>
   ): void {
-    // Check that initial state is in the set of states
+    // Check that states set is provided
+    if (config.states.size === 0) {
+      throw new Error("states cannot be empty");
+    }
+
+    if (config.alphabet.size === 0) {
+      throw new Error("Alphaber cannot be empty");
+    }
+
+    // Check that initial state is in the config
     if (!config.states.has(config.initialState)) {
       throw new Error("Initial state must be included in the set of states");
+    }
+
+    // Check that at least one final state provided
+    if (config.finalStates.size === 0) {
+      throw new Error("At least provide one final state");
     }
 
     // Check that all final states are in the set of states
@@ -70,6 +86,22 @@ public static validateConfig<State, Symbol>(
         throw new Error(
           "All final states must be included in the set of states"
         );
+      }
+    }
+
+    // Check that all transition function will produce a valid state
+    for (const state of config.states) {
+      for (const symbol of config.alphabet) {
+        const nextState = config.transition(state, symbol);
+
+        // Ensure the resulting state is valid
+        if (!config.states.has(nextState)) {
+          throw new Error(
+            `Transition function produced invalid state: ${String(
+              nextState
+            )} ` + `for state ${String(state)} and symbol ${String(symbol)}`
+          );
+        }
       }
     }
   }
@@ -104,16 +136,6 @@ public static validateState<State>(state: State, states: Set<State>): void {
     }
   }
 ```
-
-### Note:
-
-Note: Additional validation could be added here, such as:
-
-- Ensuring the states set is not empty
-- Ensuring the alphabet set is not empty
-- Checking that the transition function handles all possible state-symbol combinations
-
-I will come back to this if feel the need to do so
 
 ### Finite State Machine implementation
 
