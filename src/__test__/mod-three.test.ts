@@ -1,6 +1,11 @@
-import { modThree, FiniteStateMachine, FSMValidator } from "../../src";
+import {
+  modThree,
+  FiniteStateMachine,
+  FSMValidator,
+  FSMConfig,
+} from "../../src";
 
-describe("modThree function functionality", () => {
+describe("modThree function functionality without creating a class", () => {
   // Core functionality tests (examples from the exercise)
   // Example 1 from the exercise
   it("should calculate mod 3 of binary 110", () => {
@@ -118,22 +123,23 @@ describe("Test Finite State Machine class with mod three impelmentation", () => 
     [ModThreeState.S2]: 2,
   };
 
-  const createModeThreeConfig = {
-    states: new Set([ModThreeState.S0, ModThreeState.S1, ModThreeState.S2]),
-    initialState: ModThreeState.S0,
-    alphabet: new Set<BinarySymbol>(["0", "1"]),
-    finalStates: new Set<ModThreeState>([
-      ModThreeState.S0,
-      ModThreeState.S1,
-      ModThreeState.S2,
-    ]),
-    transition: (state: ModThreeState, symbol: BinarySymbol) => {
-      return STATE_TRANSITIONS[state][symbol];
-    },
-    outputMapper: (state: ModThreeState) => {
-      return STATE_OUTPUTS[state];
-    },
-  };
+  const createModeThreeConfig: FSMConfig<ModThreeState, BinarySymbol, number> =
+    {
+      states: new Set([ModThreeState.S0, ModThreeState.S1, ModThreeState.S2]),
+      initialState: ModThreeState.S0,
+      alphabet: new Set<BinarySymbol>(["0", "1"]),
+      finalStates: new Set<ModThreeState>([
+        ModThreeState.S0,
+        ModThreeState.S1,
+        ModThreeState.S2,
+      ]),
+      transition: (state: ModThreeState, symbol: BinarySymbol) => {
+        return STATE_TRANSITIONS[state][symbol];
+      },
+      outputMapper: (state: ModThreeState): number => {
+        return STATE_OUTPUTS[state];
+      },
+    };
 
   it("should create a valid Mod Three with proper configuration", () => {
     const validConfig = { ...createModeThreeConfig };
@@ -275,5 +281,60 @@ describe("Test Finite State Machine class with mod three impelmentation", () => 
     expect(fsm.processWithOutput(["1", "1", "0"])).toBe(0); // Binary 110 = 6, 6 mod 3 = 0
     expect(fsm.processWithOutput(["1", "0", "1"])).toBe(2); // Binary 101 = 5, 5 mod 3 = 2
     expect(fsm.processWithOutput(["1", "0", "0"])).toBe(1); // Binary 100 = 4, 4 mod 3 = 1
+  });
+});
+
+describe("Test Other type of State Machine", () => {
+  //Test Light State Config Set up
+
+  enum LightState {
+    ON,
+    OFF,
+  }
+
+  type SwitchInput = "TOGGLE";
+
+  // Define the transitions and outputs using the enum values directly
+  const transitions = {
+    [LightState.ON]: {
+      TOGGLE: LightState.OFF,
+    },
+    [LightState.OFF]: {
+      TOGGLE: LightState.ON,
+    },
+  };
+
+  const outputs: Record<LightState, string> = {
+    [LightState.ON]: "Light is ON",
+    [LightState.OFF]: "Light is OFF",
+  };
+
+  // Define the FSM configuration with explicit type parameters
+  const lightSwitchConfig: FSMConfig<LightState, SwitchInput, string> = {
+    states: new Set([LightState.ON, LightState.OFF]),
+    initialState: LightState.OFF,
+    alphabet: new Set<SwitchInput>(["TOGGLE"]),
+    finalStates: new Set([LightState.ON, LightState.OFF]),
+    transition: (state: LightState, input: SwitchInput): LightState => {
+      return transitions[state][input];
+    },
+    outputMapper: (state: LightState): string => {
+      return outputs[state];
+    },
+  };
+
+  it("should correctly toggle the light from OFF to ON", () => {
+    const fsm = new FiniteStateMachine(lightSwitchConfig);
+    expect(fsm.processWithOutput(["TOGGLE"])).toBe("Light is ON");
+  });
+
+  it("should correctly toggle the light from ON to OFF", () => {
+    // Create a modified config where the initial state is ON
+    const modifiedConfig = {
+      ...lightSwitchConfig,
+      initialState: LightState.ON,
+    };
+    const fsm = new FiniteStateMachine(modifiedConfig);
+    expect(fsm.processWithOutput(["TOGGLE"])).toBe("Light is OFF");
   });
 });

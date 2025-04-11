@@ -220,9 +220,12 @@ I also provide multiple processing options:
 - `processWithOutput()`
 - `accepts()`
 
-I have encountered cases where I need to return a number but instead return a string, which is not what I want. The output is not flexible enough for me to return a specific type, so processWithOutput() is meant for that.
+I have encountered cases where I need to return a number, but instead, a string is returned—which is not what I want. When creating a config, you need to specify a return type, such as "number" or "string". However, the output isn't flexible enough for me to return a specific type. That’s where processWithOutput() comes in it is meant to handle that.
+
 The class is sometimes hard to test, so I designed it to provide a simple acceptance check without duplicating the core processing. In a usual approach, you need to initialize a class and test it, then a second time, the actual process will run, causing duplication. This is a trade-off for handling very large inputs during testing.
+
 Another trade-off is that valid states/symbols can't always be known at compile time, which is why I value validation failures before compile errors. The generic approach adds flexibility but requires more type handling. It's a balance that led me to create interfaces and validation helpers.
+
 I also chose to use Set objects for states, alphabet, and final states, which ensures uniqueness, provides O(1) lookups, and makes the code more readable than arrays with manual duplicate checking.
 
 ## How to use it
@@ -305,7 +308,7 @@ export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol, number> = {
   transition: (state: ModThreeState, symbol: BinarySymbol) => {
     return STATE_TRANSITIONS[state][symbol];
   },
-  outputMapper: (state: ModThreeState) => {
+  outputMapper: (state: ModThreeState): number => {
     return STATE_OUTPUTS[state];
   },
 };
@@ -367,24 +370,41 @@ export type SwitchInput = "TOGGLE";
 ### 2. Create a Config
 
 ```javascript
-const transitions = {
-  [LightState.ON]: { TOGGLE: LightState.OFF },
-  [LightState.OFF]: { TOGGLE: LightState.ON },
-};
+enum LightState {
+    ON,
+    OFF,
+  }
 
-const outputs = {
-  [LightState.ON]: "Light is ON",
-  [LightState.OFF]: "Light is OFF",
-};
+  type SwitchInput = "TOGGLE";
 
-export const lightSwitchConfig = FSMConfig<ModThreeState, BinarySymbol, string> = {
-  states: new Set([LightState.ON, LightState.OFF]),
-  initialState: LightState.OFF,
-  alphabet: new Set(["TOGGLE"]),
-  finalStates: new Set([LightState.ON, LightState.OFF]),
-  transition: (state, input) => transitions[state][input],
-  outputMapper: (state) => outputs[state],
-};
+  // Define the transitions and outputs using the enum values directly
+  const transitions = {
+    [LightState.ON]: {
+      TOGGLE: LightState.OFF,
+    },
+    [LightState.OFF]: {
+      TOGGLE: LightState.ON,
+    },
+  };
+
+  const outputs: Record<LightState, string> = {
+    [LightState.ON]: "Light is ON",
+    [LightState.OFF]: "Light is OFF",
+  };
+
+  // Define the FSM configuration with explicit type parameters
+  const lightSwitchConfig: FSMConfig<LightState, SwitchInput, string> = {
+    states: new Set([LightState.ON, LightState.OFF]),
+    initialState: LightState.OFF,
+    alphabet: new Set<SwitchInput>(["TOGGLE"]),
+    finalStates: new Set([LightState.ON, LightState.OFF]),
+    transition: (state: LightState, input: SwitchInput): LightState => {
+      return transitions[state][input];
+    },
+    outputMapper: (state: LightState): string => {
+      return outputs[state];
+    },
+  };
 ```
 
 ### 3. Validate Inputs

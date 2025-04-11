@@ -40,7 +40,7 @@ export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol, number> = {
   transition: (state: ModThreeState, symbol: BinarySymbol) => {
     return STATE_TRANSITIONS[state][symbol];
   },
-  outputMapper: (state: ModThreeState) => {
+  outputMapper: (state: ModThreeState): number => {
     return STATE_OUTPUTS[state];
   },
 };
