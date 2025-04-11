@@ -38,6 +38,26 @@ export class FSMValidator {
       }
     }
 
+    // Check that output mapper function is provided
+    if (!config.outputMapper) {
+      throw new Error("Output mapper function is required");
+    }
+
+    // Check that output mapper produces valid outputs for all states
+    try {
+      for (const state of config.states) {
+        // Check if the output mapper can be called with each state
+        const output = config.outputMapper(state);
+
+        // Additional validation could be performed here if needed,
+        // such as checking if the output is of the expected type
+      }
+    } catch (error) {
+      throw new Error(
+        `Output mapper function error: ${(error as Error).message}`
+      );
+    }
+
     // Check that all transition function will produce a valid state
     for (const state of config.states) {
       for (const symbol of config.alphabet) {

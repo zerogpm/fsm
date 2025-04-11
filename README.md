@@ -42,8 +42,8 @@ export interface FSMConfig<State, Symbol, OutputType = unknow> {
   // δ: Transition function
   transition: TransitionFunction<State, Symbol>;
 
-  // Optional output mapper function
-  outputMapper?: (state: State) => OutputType;
+  // Require output mapper function
+  outputMapper: (state: State) => OutputType;
 }
 ```
 
@@ -63,11 +63,11 @@ public static validateConfig<State, Symbol>(
   ): void {
     // Check that states set is provided
     if (config.states.size === 0) {
-      throw new Error("states cannot be empty");
+      throw new Error("States cannot be empty");
     }
 
     if (config.alphabet.size === 0) {
-      throw new Error("Alphaber cannot be empty");
+      throw new Error("Alphabet cannot be empty");
     }
 
     // Check that initial state is in the config
@@ -87,6 +87,26 @@ public static validateConfig<State, Symbol>(
           "All final states must be included in the set of states"
         );
       }
+    }
+
+    // Check that output mapper function is provided
+    if (!config.outputMapper) {
+      throw new Error("Output mapper function is required");
+    }
+
+    // Check that output mapper produces valid outputs for all states
+    try {
+      for (const state of config.states) {
+        // Check if the output mapper can be called with each state
+        const output = config.outputMapper(state);
+
+        // Additional validation could be performed here if needed,
+        // such as checking if the output is of the expected type
+      }
+    } catch (error) {
+      throw new Error(
+        `Output mapper function error: ${(error as Error).message}`
+      );
     }
 
     // Check that all transition function will produce a valid state
@@ -157,9 +177,9 @@ Creates a new FSM with the provided configuration.
 
 #### Methods
 
-##### `process(input: Symbol[]): State`
+##### `processState(input: Symbol[]): State`
 
-Processes a sequence of input symbols and returns the final state.
+This is an internal method, process a state and return the final state
 
 ##### `processWithOutput<OutputType>(input: Symbol[]): OutputType`
 
@@ -180,7 +200,7 @@ interface FSMConfig<State, Symbol> {
   initialState: State;
   finalStates: Set<State>;
   transition: (state: State, symbol: Symbol) => State;
-  outputMapper?: (state: State) => (state: State) => OutputType;
+  outputMapper: (state: State) => (state: State) => OutputType;
 }
 ```
 
@@ -190,7 +210,7 @@ I take advantage of TypeScript generics <State, Symbol> for flexibility in the t
 Rather than hardcoding transition rules, I use FSMConfig to set states, symbols, transition functions, outputs, and initial and final states. This makes the FSM easy to configure without changing its implementation. There is strict validation, so the program won't accept invalid input, which prevents unexpected behavior.
 I also provide multiple processing options:
 
-- `process()`
+- `processState()`
 - `processWithOutput()`
 - `accepts()`
 

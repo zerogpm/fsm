@@ -26,6 +26,6 @@ export interface FSMConfig<State, Symbol, OutputType = unknown> {
   // δ: Transition function
   transition: TransitionFunction<State, Symbol>;
 
-  // Optional output mapper function
-  outputMapper?: (state: State) => OutputType;
+  // Required output mapper function
+  outputMapper: (state: State) => OutputType;
 }

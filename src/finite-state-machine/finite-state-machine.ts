@@ -15,9 +15,9 @@ export class FiniteStateMachine<State, Symbol> {
 
   /**
    * Process an input and return the final state
-   * This is an internal methos, users should use processWithOutput for output
+   * This is an internal method, users should use processWithOutput for output
    */
-  private process(input: Symbol[]): State {
+  private processState(input: Symbol[]): State {
     let currentState = this.config.initialState;
 
     for (const symbol of input) {
@@ -41,7 +41,7 @@ export class FiniteStateMachine<State, Symbol> {
    * Error if the final state is not valid or if no output mapper is provided
    */
   public processWithOutput<OutputType>(input: Symbol[]): OutputType {
-    const finalState = this.process(input);
+    const finalState = this.processState(input);
 
     // Validate that we reached a final state
     if (!this.config.finalStates.has(finalState)) {
@@ -63,7 +63,7 @@ export class FiniteStateMachine<State, Symbol> {
    * This is useful for jest testing purpose.
    */
   public accepts(input: Symbol[]): boolean {
-    const finalState = this.process(input);
+    const finalState = this.processState(input);
     return this.config.finalStates.has(finalState);
   }
 }
