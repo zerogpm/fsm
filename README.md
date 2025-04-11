@@ -26,7 +26,7 @@ export type TransitionFunction<State, Symbol> = (
 /**
  * Configuration for a Finite State Machine
  */
-export interface FSMConfig<State, Symbol, OutputType = any> {
+export interface FSMConfig<State, Symbol, OutputType = unknow> {
   // Q: Set of states
   states: Set<State>;
 
@@ -266,8 +266,8 @@ const STATE_OUTPUTS: Record<ModThreeState, number> = {
   [ModThreeState.S2]: 2,
 };
 
-// Create and export the FSM configuration
-export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol> = {
+// Create mod three config make sure Output set it to number. If you want other type set other type For example, String
+export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol, number> = {
   states: new Set([ModThreeState.S0, ModThreeState.S1, ModThreeState.S2]),
   initialState: ModThreeState.S0,
   alphabet: new Set<BinarySymbol>(["0", "1"]),

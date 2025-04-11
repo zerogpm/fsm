@@ -5,5 +5,5 @@ import { modThree } from "./mod-three";
  */
 export * from "./finite-state-machine/finite-state-machine";
 export * from "./mod-three";
-
-console.log("test", modThree("101"));
+export * from "./finite-state-machine/fsmValidator";
+export * from "./finite-state-machine/types";

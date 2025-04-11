@@ -10,7 +10,7 @@ export type TransitionFunction<State, Symbol> = (
 /**
  * Configuration for a Finite State Machine
  */
-export interface FSMConfig<State, Symbol, OutputType = any> {
+export interface FSMConfig<State, Symbol, OutputType = unknown> {
   // Q: Set of states
   states: Set<State>;
 

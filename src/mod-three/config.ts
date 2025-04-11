@@ -28,7 +28,7 @@ const STATE_OUTPUTS: Record<ModThreeState, number> = {
 };
 
 // Create and export the FSM configuration
-export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol> = {
+export const modThreeConfig: FSMConfig<ModThreeState, BinarySymbol, number> = {
   states: new Set([ModThreeState.S0, ModThreeState.S1, ModThreeState.S2]),
   initialState: ModThreeState.S0,
   alphabet: new Set<BinarySymbol>(["0", "1"]),

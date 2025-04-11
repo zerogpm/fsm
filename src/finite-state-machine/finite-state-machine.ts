@@ -15,8 +15,9 @@ export class FiniteStateMachine<State, Symbol> {
 
   /**
    * Process an input and return the final state
+   * This is an internal methos, users should use processWithOutput for output
    */
-  public process(input: Symbol[]): State {
+  private process(input: Symbol[]): State {
     let currentState = this.config.initialState;
 
     for (const symbol of input) {
