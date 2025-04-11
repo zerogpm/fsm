@@ -49,8 +49,14 @@ export class FSMValidator {
         // Check if the output mapper can be called with each state
         const output = config.outputMapper(state);
 
-        // Additional validation could be performed here if needed,
-        // such as checking if the output is of the expected type
+        // Check if the output is undefined or null
+        if (output === undefined) {
+          throw new Error("Output mapper function returned undefined");
+        }
+
+        if (output === null) {
+          throw new Error("Output mapper function returned null");
+        }
       }
     } catch (error) {
       throw new Error(

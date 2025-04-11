@@ -117,6 +117,26 @@ describe("Test Finite State Machine class with mod three impelmentation", () => 
     );
   });
 
+  it("should throw error for invalid output mapper", () => {
+    const invalidConfig = {
+      ...createModeThreeConfig,
+      outputMapper: () => undefined, // Invalid implementation that returns undefined
+    };
+    expect(() => new FiniteStateMachine(invalidConfig)).toThrow(
+      "Output mapper function returned undefined"
+    );
+  });
+
+  it("should throw error for null output mapper", () => {
+    const invalidConfig = {
+      ...createModeThreeConfig,
+      outputMapper: () => null, // Invalid implementation that returns null
+    };
+    expect(() => new FiniteStateMachine(invalidConfig)).toThrow(
+      "Output mapper function returned null"
+    );
+  });
+
   it("should throw error for invalid transition result", () => {
     const invalidConfig = { ...createModeThreeConfig };
     // Override the transition function to return an invalid state
