@@ -2,12 +2,92 @@ import { modThree, FiniteStateMachine, FSMValidator } from "../../src";
 
 describe("modThree function functionality", () => {
   // Core functionality tests (examples from the exercise)
+  // Example 1 from the exercise
   it("should calculate mod 3 of binary 110", () => {
     expect(modThree("110")).toBe(0);
   });
 
   it("should calculate mod 3 of binary 101", () => {
     expect(modThree("101")).toBe(2); // 5 mod 3 = 2
+  });
+
+  // Example 2 from the exercise
+  it("should calculate mod 3 of binary 1010", () => {
+    expect(modThree("1010")).toBe(1);
+  });
+
+  // Additional functional tests
+  it("should calculate mod 3 of binary 0 as 0", () => {
+    expect(modThree("0")).toBe(0);
+  });
+
+  it("should calculate mod 3 of binary 1 as 1", () => {
+    expect(modThree("1")).toBe(1);
+  });
+
+  // Longer binary strings
+  it("should calculate mod 3 of a longer binary string correctly", () => {
+    expect(modThree("101010101")).toBe(2);
+  });
+
+  it("should calculate mod 3 of a very long binary string correctly", () => {
+    expect(modThree("1111111111111111")).toBe(0);
+  });
+});
+
+describe("modThree function edge cases", () => {
+  // Existing test case
+  it("should handle whitespace properly", () => {
+    expect(() => modThree("  ")).toThrow(); // reject white space
+  });
+
+  // Additional edge cases
+  it("should reject empty string", () => {
+    expect(() => modThree("")).toThrow();
+  });
+
+  it("should reject null", () => {
+    expect(() => modThree(null as unknown as string)).toThrow();
+  });
+
+  it("should reject undefined", () => {
+    expect(() => modThree(undefined as unknown as string)).toThrow();
+  });
+
+  it("should reject non-binary characters", () => {
+    expect(() => modThree("1012")).toThrow(); // contains '2'
+    expect(() => modThree("10a1")).toThrow(); // contains 'a'
+    expect(() => modThree("1.01")).toThrow(); // contains '.'
+  });
+
+  it("should reject strings with special characters", () => {
+    expect(() => modThree("10%01")).toThrow();
+    expect(() => modThree("10-01")).toThrow();
+    expect(() => modThree("10+01")).toThrow();
+  });
+
+  it("should reject strings with mixed whitespace and binary", () => {
+    expect(() => modThree("101 01")).toThrow();
+    expect(() => modThree(" 1010")).toThrow();
+    expect(() => modThree("1010 ")).toThrow();
+  });
+
+  it("should reject objects passed as input", () => {
+    expect(() => modThree({} as unknown as string)).toThrow();
+  });
+
+  it("should reject arrays passed as input", () => {
+    expect(() => modThree(["1", "0"] as unknown as string)).toThrow();
+  });
+
+  it("should reject numbers passed as input", () => {
+    expect(() => modThree(101 as unknown as string)).toThrow();
+  });
+
+  //Test for extremely long inputs
+  it("should reject excessively long binary strings", () => {
+    const longInput = "1".repeat(1001); // 1001 '1's
+    expect(() => modThree(longInput)).toThrow();
   });
 });
 
