@@ -1,3 +1,136 @@
+# Table of Contents
+
+- [Project Setup](#project-setup)
+
+  - [Prerequisites](#prerequisites)
+  - [Getting Started with Docker](#getting-started-with-docker)
+  - [Understanding the Project Structure](#understanding-the-project-structure)
+  - [Building and Running the Application](#building-and-running-the-application)
+  - [Running the Application](#running-the-application)
+  - [Running Tests](#running-tests)
+  - [Stopping the Containers](#stopping-the-containers)
+
+- [Finite State Machine Implementation](#finite-state-machine-implementation)
+
+  - [Theory and Background](#theory-and-background)
+  - [Implementation Details](#implementation-details)
+    - [Types and Configuration](#types-and-configuration)
+    - [FSM Validator](#fsm-validator)
+    - [Finite State Machine Class](#finite-state-machine-class)
+  - [API Reference](#api-reference)
+    - [FiniteStateMachine Class](#finitestatemachinenstate-symbol)
+    - [FSMConfig Interface](#fsmconfignstate-symbol)
+
+- [Example: Mod-Three Calculator](#example-mod-three-calculator)
+
+  - [Understanding the Mod-Three Example](#understanding-the-mod-three)
+  - [How to Use the Mod-Three](#how-to-use-the-mod-three)
+  - [Implementation Files](#implementation-files)
+
+- [Creating Your Own FSM](#creating-your-own-fsm)
+
+  - [Define States and Inputs](#1define-states-and-inputs)
+  - [Create a Config](#2-create-a-config)
+  - [Validate Inputs](#3-validate-inputs)
+  - [Use It in a Function](#4-use-it-in-a-function)
+
+- [Testing](#testing)
+  - [Running Tests](#run-the-test)
+  - [What Is Tested](#what-i-am-testing)
+  - [Test Results](#test-results)
+
+# Project Setup Guide
+
+This guide will help you set up and run the project using Docker. Following these steps will ensure you have a consistent development environment.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed on your machine:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/) (usually included with Docker Desktop)
+- Git (to clone the repository)
+
+## Getting Started with Docker
+
+This project uses Docker to create isolated development environments. You don't need to run npm commands directly - everything is handled through Docker Compose commands.
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
+
+### 2. Understanding the Project Structure
+
+The project uses:
+
+- A Node.js application (based on Node 20 Alpine)
+- Docker for containerization
+- Docker Compose for managing multiple containers
+
+### 3. Building and Running the Application
+
+To start the application:
+
+```bash
+docker compose up app
+```
+
+This command:
+
+- Builds the Docker image if it doesn't exist
+- Creates and starts the container named "fsm"
+- Maps port 3000 for internal communication
+- Mounts the project directory to `/app` in the container (enabling hot-reloading)
+- Sets the environment to development
+- Executes the command specified in the docker compose file (which runs the application)
+
+### 4. Running the Application
+
+The application is not a web app that you access through a browser. Instead, when you run `docker compose up app`, it will:
+
+- Start the application
+- Watch for changes in `./index.ts` (the entry point of the program) and other source files
+- Display logs and output in the terminal window
+
+You'll see the application output directly in your terminal, where you started the container.
+
+**Important:** Since the terminal will be displaying the application logs and watching for changes, you'll need to open a new terminal window/tab to stop the application. In the new terminal, navigate to the project directory and run:
+
+```bash
+docker compose down
+```
+
+This will properly shut down the running containers.
+
+### 5. Running Tests
+
+To run the test suite:
+
+```bash
+docker compose up test
+```
+
+This command:
+
+- Creates and starts a separate container named "fsm-test"
+- Sets the environment to test
+- Runs the tests using Jest (as specified in the docker compose file)
+
+### 6. Stopping the Containers
+
+Since `docker compose up app` runs in watch mode and occupies your terminal with logs, you'll need to open a new terminal window/tab to stop the application properly:
+
+```bash
+# In a new terminal window/tab
+cd <project-directory>
+docker compose down
+```
+
+This command stops and removes all the containers defined in your docker compose file.
+
 ## My Thoughts steps
 
 A finite automaton (FA) is a 5-tuple (Q, Σ, q₀, F, δ) where:
@@ -430,3 +563,66 @@ export function useLightSwitch(input: string): string {
   return fsm.processWithOutput([input]);
 }
 ```
+
+# Testing
+
+### What I am Testing
+
+`Run the Test`
+
+```bash
+docker compose up test
+```
+
+`Test file location`
+
+```bash
+/src/__test__/mod-three.test.ts
+```
+
+I am testing a Finite State Machine implementation with two primary applications:
+
+Mod Three Calculator: A state machine that computes the remainder when a binary number is divided by 3
+
+Light Switch Simulator: A simple state machine that toggles between ON and OFF states
+
+The tests cover multiple aspects:
+ModThree Function Tests
+
+Core functionality of the modThree function which computes modulo 3 of binary numbers
+Edge cases including handling of invalid inputs, whitespace, non-binary characters, etc.
+Performance with various binary string lengths
+
+Finite State Machine Implementation Tests
+
+Validation of FSM configuration (states, alphabet, transitions, etc.)
+Error handling for invalid configurations
+State transitions and output mapping
+Processing of input sequences
+
+Light Switch State Machine Tests
+
+Toggling between ON and OFF states
+Handling of empty and very large input sequences
+
+Test Results
+Test results show that all 38 tests have passed successfully.
+
+FSM validation is working properly:
+
+It rejects empty states and alphabets
+It validates that initial and final states are included in the set of states
+It checks that transitions produce valid states
+It ensures that symbols are valid members of the alphabet
+
+FSM implementation correctly processes input sequences:
+
+For the mod three calculator, it computes the correct remainder
+For the light switch, it correctly toggles between ON and OFF states
+
+Implementation handles edge cases appropriately:
+
+It rejects invalid inputs like null, undefined, non-binary characters
+It handles whitespace correctly
+It has safeguards against excessively long inputs
+It properly validates complex configurations including circular references

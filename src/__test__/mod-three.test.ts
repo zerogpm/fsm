@@ -285,6 +285,11 @@ describe("Test Finite State Machine class with mod three impelmentation", () => 
 });
 
 describe("Test Other type of State Machine", () => {
+  // Helper function to create arrays of toggles of specific sizes
+  const createToggleArray = (size: number): SwitchInput[] => {
+    return Array(size).fill("TOGGLE" as SwitchInput);
+  };
+
   //Test Light State Config Set up
 
   enum LightState {
@@ -336,5 +341,31 @@ describe("Test Other type of State Machine", () => {
     };
     const fsm = new FiniteStateMachine(modifiedConfig);
     expect(fsm.processWithOutput(["TOGGLE"])).toBe("Light is OFF");
+  });
+
+  it("should accept any sequence of toggle inputs", () => {
+    const fsm = new FiniteStateMachine(lightSwitchConfig);
+    expect(fsm.accepts(["TOGGLE"])).toBe(true);
+    expect(fsm.accepts(["TOGGLE", "TOGGLE"])).toBe(true);
+    expect(fsm.accepts(["TOGGLE", "TOGGLE", "TOGGLE"])).toBe(true);
+  });
+
+  // Test that checks if the FSM behaves correctly with an empty input sequence
+  it("should remain in initial state with empty input", () => {
+    const fsm = new FiniteStateMachine(lightSwitchConfig);
+    expect(fsm.processWithOutput([])).toBe("Light is OFF");
+
+    const onConfig = { ...lightSwitchConfig, initialState: LightState.ON };
+    const fsmOn = new FiniteStateMachine(onConfig);
+    expect(fsmOn.processWithOutput([])).toBe("Light is ON");
+  });
+
+  it("should handle very large inputs (10,000 toggles)", () => {
+    const fsm = new FiniteStateMachine(lightSwitchConfig);
+    const veryLargeInput = createToggleArray(10000);
+
+    // Test using accepts function which should be more efficient
+    // for large inputs as it only checks final state
+    expect(fsm.accepts(veryLargeInput)).toBe(true);
   });
 });
