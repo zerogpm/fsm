@@ -377,7 +377,7 @@ const outputs = {
   [LightState.OFF]: "Light is OFF",
 };
 
-export const lightSwitchConfig = {
+export const lightSwitchConfig = FSMConfig<ModThreeState, BinarySymbol, string> = {
   states: new Set([LightState.ON, LightState.OFF]),
   initialState: LightState.OFF,
   alphabet: new Set(["TOGGLE"]),
